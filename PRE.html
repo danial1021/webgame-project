@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #canvas {
+            margin: 20px auto;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+
+
+    <script>
+        var canvas = document.getElementById('canvas');
+        canvas.width = 512; // canvas size
+        canvas.height = 480;
+        if (!canvas.getContext) // canvas 지원 여부확인
+            alert('err');
+        var ctx = canvas.getContext('2d'); // context 지정
+
+        var backgroundImg = new Image();
+        var backgroundReady = false;
+        backgroundImg.onload = function () {
+            backgroundReady = true;
+            // ctx.font = '48px serif';
+            // ctx.fillStyle = 'blue';
+            // ctx.fillText('Hello', 30, 440);
+
+            render();
+        }
+        backgroundImg.src = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/15388/background.png';
+
+
+        var player = {
+            x: 0,
+            y: 0,
+            width: 40,
+            height: 40,
+            image: new Image(),
+        };
+        let width, height;
+        let speed = 10;
+
+        var moveLeft = false;
+        var moveRight = false;
+        var moveUp = false;
+        var moveDown = false;
+
+        function render() {
+            player.image.src = 'https://play-lh.googleusercontent.com/Df1ecVQZ_E_d9oetc4L2-iReDjo9xXfJAOiaNcljy7MdMtHwbyDsEGWq8uQsldkdnA';
+            player.image.onload = function () {
+                window.addEventListener("keydown", activate, false);
+                window.addEventListener("keyup", deactivate, false);
+                window.setInterval(updateGame, 30);
+            }
+        }
+
+        function updateGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if(backgroundReady)
+                ctx.drawImage(backgroundImg, 0, 0);
+            updatePlayer();
+        }
+
+        function updatePlayer() {
+            if (player.x + player.width >= canvas.width) {
+                moveRight = false
+            }
+            if (player.y + player.height >= canvas.height) {
+                moveDown = false
+            }
+            if (player.x <= 0) {
+                moveLeft = false
+            }
+            if (player.y <= 0) {
+                moveUp = false
+            }
+            if (moveRight) {
+                player.x += speed;
+            }
+            if (moveUp) {
+                player.y -= speed;
+            }
+            if (moveDown) {
+                player.y += speed;
+            }
+            if (moveLeft) {
+                player.x -= speed;
+            }
+
+            // console.log(player.x, player.y);
+            ctx.drawImage(player.image ,player.x, player.y, player.width, player.height);
+        }
+
+
+        function activate(event) {
+            let key = event.keyCode;
+            if (key == 38) { moveUp=true; console.log("up"); }
+            if (key == 40) { moveDown=true; console.log("down"); }
+            if (key == 37) { moveLeft=true; console.log("left"); }
+            if (key == 39) { moveRight=true; console.log("right"); }
+        }
+
+        function deactivate(event) {
+            let key = event.keyCode;
+            if (key == 38) { moveUp=false; }
+            if (key == 40) { moveDown=false; }
+            if (key == 37) { moveLeft=false; }
+            if (key == 39) { moveRight=false; }
+        }
+
+
+        function getRandomNumber(min, max) {
+            return Math.round(Math.random() * (max - min)) + min;
+        }
+
+    </script>
+</body>
+
+</html>
